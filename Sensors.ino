@@ -3,14 +3,17 @@ int Lgreen = 12;
 int Lblue = 11;
 int Mred=10;
 int Mgreen=9;
-int Sred=8;
-int Sgreen=7;
-int Sun_red=6;
-int Sun_green=5;
-int temp = 0;//temp sensor pin
-int moisture=1;
-int smoke=2;
-int light=3;
+int Mblue=8;
+int Sred=7;
+int Sgreen=6;
+int Sblue=5;
+int Sun_red=4;
+int Sun_green=3;
+int Sun_blue=2;
+int temp = A0;//temp sensor pin
+int moisture=A1;
+int smoke=A2;
+int light=A3;
 
 void setup() {
   Serial.begin (9600); //data transfer speed
@@ -37,7 +40,8 @@ void loop()
 {
   //Temperature
   float Real_Voltage = analogRead(temp) * 0.004882814; // reading the sensor value and convert it to voltage
-  float Temp_C = Real_Voltage * 100.0;   // changing the voltage into Celsius
+  float Temp_C = (Real_Voltage-0.5) * 100.0;   // changing the voltage into Celsius
+  //float Temp_C=analogRead(temp);
   Serial.print("Temp in C: ");
   Serial.println(Temp_C);
   
@@ -79,20 +83,26 @@ void loop()
 
   //Moisture
   float moist=analogRead(moisture);
-  if (moist>=20.0 && moist<=60.0)
+  Serial.print("Moisture: ");
+  Serial.println(moist);
+  if (moist>=6.0 && moist<=400.0)
   {
     digitalWrite(Mred,LOW);
     digitalWrite(Mgreen,HIGH);
+    digitalWrite(Mblue,LOW);
   }
   else
   {
     digitalWrite(Mred,HIGH);
     digitalWrite(Mgreen,LOW);
+    digitalWrite(Mblue,LOW);
   }
   
   //Gas or Smoke
   float smokey=analogRead(smoke);
-  if (smokey<400)//threshhold=400ppm
+  Serial.print("Gas/Smoke: ");
+  Serial.println(smokey);
+  if (smokey<250)//threshhold=250ppm
   {
     digitalWrite(Sred,LOW);
     digitalWrite(Sgreen,HIGH);
@@ -106,17 +116,20 @@ void loop()
   //Light
   float sun=analogRead(light);//Lumens
   float area=500;//in sq. foot
-  float candle_foot=sun/500;
+  float candle_foot=sun;
+  Serial.println(candle_foot);
   
-  if (candle_foot>500 && candle_foot<1000)//threshhold=400ppm
+  if (candle_foot>200 && candle_foot<1000)
   {
     digitalWrite(Sun_red,LOW);
     digitalWrite(Sun_green,HIGH);
+    digitalWrite(Sun_blue,LOW);
   }
   else
   {
     digitalWrite(Sun_red,HIGH);
     digitalWrite(Sun_green,LOW);
+    digitalWrite(Sun_blue,LOW);
   }
 
   delay(2000);//wait 2sec before collecting data again
